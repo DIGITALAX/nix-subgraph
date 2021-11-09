@@ -1,0 +1,25 @@
+type Order @entity {
+  id: ID!
+  price: BigInt!
+  token: Token!
+  tokenIds: [BigInt!]!
+  maker: String!
+  taker: String!
+  orderType: BigInt!
+  orderTypeString: String!
+  expiry: BigInt!
+  tradeCount: BigInt!
+  tradeMax: BigInt!
+  orderIndex: String!
+}
+
+type Token @entity {
+  id: ID!
+  orderIndexes: [String!]!
+  orders : [Order!]! @derivedFrom(field:"token")
+  executed: BigInt!
+  volumeToken: BigInt!
+  volumeErc20: BigInt!
+}
+
+
