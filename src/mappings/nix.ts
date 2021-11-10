@@ -14,7 +14,7 @@ import {
   OrderExecuted
 } from '../../generated/Nix/Nix'
 import { ERC721 as ERC721Contract } from '../../generated/Nix/ERC721'
-import {loadOrCreateGlobalStats} from "./factory/GlobalStats.factory";
+import {loadOrCreateGlobalStat} from "./factory/GlobalStat.factory";
 
 //const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -91,9 +91,9 @@ export function handleOrderAdded(event: OrderAdded): void {
   order.save();
   token.save();
 
-  let globalStats = loadOrCreateGlobalStats();
-  globalStats.numberOfOrdersAdded = globalStats.numberOfOrdersAdded.plus(ONE);
-  globalStats.save();
+  let globalStat = loadOrCreateGlobalStat();
+  globalStat.numberOfOrdersAdded = globalStat.numberOfOrdersAdded.plus(ONE);
+  globalStat.save();
 }
 
 export function handleOrderDisabled(event: OrderDisabled): void {
@@ -155,9 +155,9 @@ export function handleOrderExecuted(event: OrderExecuted): void {
 }
 
 export function handleTip(event: ThankYou): void {
-  let globalStats = loadOrCreateGlobalStats();
-  globalStats.numberOfOrdersAdded = globalStats.tipLifetimeAccumulatedInWei.plus(event.params.tip);
-  globalStats.save();
+  let globalStat = loadOrCreateGlobalStat();
+  globalStat.numberOfOrdersAdded = globalStat.tipLifetimeAccumulatedInWei.plus(event.params.tip);
+  globalStat.save();
 }
 
 

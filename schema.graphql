@@ -33,7 +33,7 @@ type Trade @entity {
   orders: [Order!]!
 }
 
-type GlobalStats @entity {
+type GlobalStat @entity {
    id: ID!
    tipLifetimeAccumulatedInWei: BigInt!
    numberOfOrdersAdded: BigInt!

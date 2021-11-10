@@ -312,7 +312,7 @@ export class Trade extends Entity {
   }
 }
 
-export class GlobalStats extends Entity {
+export class GlobalStat extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -320,17 +320,17 @@ export class GlobalStats extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save GlobalStats entity without an ID");
+    assert(id !== null, "Cannot save GlobalStat entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save GlobalStats entity with non-string ID. " +
+      "Cannot save GlobalStat entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("GlobalStats", id.toString(), this);
+    store.set("GlobalStat", id.toString(), this);
   }
 
-  static load(id: string): GlobalStats | null {
-    return store.get("GlobalStats", id) as GlobalStats | null;
+  static load(id: string): GlobalStat | null {
+    return store.get("GlobalStat", id) as GlobalStat | null;
   }
 
   get id(): string {
