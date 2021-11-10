@@ -132,6 +132,15 @@ export class Order extends Entity {
     this.set("tradeMax", Value.fromBigInt(value));
   }
 
+  get royaltyFactor(): BigInt {
+    let value = this.get("royaltyFactor");
+    return value.toBigInt();
+  }
+
+  set royaltyFactor(value: BigInt) {
+    this.set("royaltyFactor", Value.fromBigInt(value));
+  }
+
   get orderIndex(): BigInt {
     let value = this.get("orderIndex");
     return value.toBigInt();
@@ -233,5 +242,130 @@ export class Token extends Entity {
 
   set volumeErc20(value: BigInt) {
     this.set("volumeErc20", Value.fromBigInt(value));
+  }
+}
+
+export class Trade extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Trade entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Trade entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Trade", id.toString(), this);
+  }
+
+  static load(id: string): Trade | null {
+    return store.get("Trade", id) as Trade | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get royaltyFactor(): BigInt {
+    let value = this.get("royaltyFactor");
+    return value.toBigInt();
+  }
+
+  set royaltyFactor(value: BigInt) {
+    this.set("royaltyFactor", Value.fromBigInt(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    return value.toBigInt();
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get uniqueAddresses(): Array<string> {
+    let value = this.get("uniqueAddresses");
+    return value.toStringArray();
+  }
+
+  set uniqueAddresses(value: Array<string>) {
+    this.set("uniqueAddresses", Value.fromStringArray(value));
+  }
+
+  get orders(): Array<string> {
+    let value = this.get("orders");
+    return value.toStringArray();
+  }
+
+  set orders(value: Array<string>) {
+    this.set("orders", Value.fromStringArray(value));
+  }
+}
+
+export class GlobalStats extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save GlobalStats entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save GlobalStats entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("GlobalStats", id.toString(), this);
+  }
+
+  static load(id: string): GlobalStats | null {
+    return store.get("GlobalStats", id) as GlobalStats | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get tipLifetimeAccumulatedInWei(): BigInt {
+    let value = this.get("tipLifetimeAccumulatedInWei");
+    return value.toBigInt();
+  }
+
+  set tipLifetimeAccumulatedInWei(value: BigInt) {
+    this.set("tipLifetimeAccumulatedInWei", Value.fromBigInt(value));
+  }
+
+  get numberOfOrdersAdded(): BigInt {
+    let value = this.get("numberOfOrdersAdded");
+    return value.toBigInt();
+  }
+
+  set numberOfOrdersAdded(value: BigInt) {
+    this.set("numberOfOrdersAdded", Value.fromBigInt(value));
+  }
+
+  get numberOfTradesExecuted(): BigInt {
+    let value = this.get("numberOfTradesExecuted");
+    return value.toBigInt();
+  }
+
+  set numberOfTradesExecuted(value: BigInt) {
+    this.set("numberOfTradesExecuted", Value.fromBigInt(value));
   }
 }

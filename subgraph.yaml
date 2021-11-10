@@ -28,3 +28,11 @@ dataSources:
       eventHandlers:
         - event: OrderAdded(address,uint256)
           handler: handleOrderAdded
+        - event: OrderDisabled(address,uint256)
+          handler: handleOrderDisabled
+        - event: OrderExecuted(address,uint256)
+          handler: handleOrderExecuted
+        - event: OrderUpdated(address,uint256)
+          handler: handleOrderUpdated
+        - event: ThankYou(uint256)
+          handler: handleTip

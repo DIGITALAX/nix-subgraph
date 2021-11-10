@@ -1,27 +1,36 @@
 /* eslint-disable prefer-const */
 import { BigInt, BigDecimal, store, Address, log } from '@graphprotocol/graph-ts'
+import {ZERO, ONE} from "./constants";
 import {
   Order,
   Token
 } from '../../generated/schema'
-import { OrderAdded, Nix as NixContract } from '../../generated/Nix/Nix'
+import {
+  OrderAdded,
+  Nix as NixContract,
+  OrderUpdated,
+  OrderDisabled,
+  ThankYou,
+  OrderExecuted
+} from '../../generated/Nix/Nix'
 import { ERC721 as ERC721Contract } from '../../generated/Nix/ERC721'
+import {loadOrCreateGlobalStats} from "./factory/GlobalStats.factory";
 
 //const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export function handleOrderAdded(event: OrderAdded): void {
+  let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
   // Add the token info
- let token = Token.load(event.params.token.toHexString());
+  let token = Token.load(event.params.token.toHexString());
   if(token == null){
     token = new Token(event.params.token.toHexString());
-    token.executed = null;
+    token.executed = ZERO;
     token.orderIndexes = null;
-    token.volumeErc20 = null;
-    token.volumeToken = null;
+    token.volumeErc20 = ZERO;
+    token.volumeToken = ZERO;
     token.name = null;
     token.symbol = null;
   }
-  let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
   let nixContract = NixContract.bind(event.address);
 
   let order = new Order(orderId);
@@ -30,16 +39,17 @@ export function handleOrderAdded(event: OrderAdded): void {
   let callResult = nixContract.try_getOrder(event.params.token, event.params.orderIndex);
     if (callResult.reverted) {
       log.info('get order reverted', []);
-        order.expiry = null;
+        order.expiry = ZERO;
         order.maker = null;
-        order.orderIndex = null;
+        order.orderIndex = ZERO;
         order.buyOrSell = null;
         order.anyOrAll = null;
-        order.price = null;
+        order.price = ZERO;
         order.taker = null;
         order.tokenIds = null;
-        order.tradeCount = null;
-        order.tradeMax = null;
+        order.tradeCount = ZERO;
+        order.tradeMax = ZERO;
+        order.royaltyFactor = ZERO;
     } else {
         order.expiry = callResult.value.expiry;
         order.maker = callResult.value.maker.toHexString();
@@ -51,6 +61,7 @@ export function handleOrderAdded(event: OrderAdded): void {
         order.tokenIds = callResult.value.tokenIds;
         order.tradeCount = callResult.value.tradeCount;
         order.tradeMax = callResult.value.tradeMax;
+        order.royaltyFactor = callResult.value.royaltyFactor;
     }
 
   let tokenResult = nixContract.try_tokens(event.params.token);
@@ -80,5 +91,73 @@ export function handleOrderAdded(event: OrderAdded): void {
   order.save();
   token.save();
 
+  let globalStats = loadOrCreateGlobalStats();
+  globalStats.numberOfOrdersAdded = globalStats.numberOfOrdersAdded.plus(ONE);
+  globalStats.save();
 }
+
+export function handleOrderDisabled(event: OrderDisabled): void {
+  let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
+
+  let order = Order.load(orderId);
+  if(order == null){
+    log.info('Missing order', []);
+  }
+  let nixContract = NixContract.bind(event.address);
+
+  let callResult = nixContract.try_getOrder(event.params.token, event.params.orderIndex);
+    if (callResult.reverted) {
+      log.info('get order reverted- disable handler', []);
+    } else {
+        order.expiry = callResult.value.expiry;
+    }
+   order.save();
+}
+
+export function handleOrderUpdated(event: OrderUpdated): void {
+  let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
+
+  let order = Order.load(orderId);
+  if(order == null){
+    log.info('Missing order', []);
+  }
+  let nixContract = NixContract.bind(event.address);
+
+  let callResult = nixContract.try_getOrder(event.params.token, event.params.orderIndex);
+    if (callResult.reverted) {
+      log.info('get order reverted- update handler', []);
+    } else {
+        order.expiry = callResult.value.expiry;
+        order.price = callResult.value.price;
+        order.taker = callResult.value.taker.toHexString();
+        order.tokenIds = callResult.value.tokenIds;
+        order.tradeMax = callResult.value.tradeMax;
+        order.royaltyFactor = callResult.value.royaltyFactor;
+    }
+   order.save();
+}
+
+// TODO
+export function handleOrderExecuted(event: OrderExecuted): void {
+  let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
+
+  let order = Order.load(orderId);
+  if(order == null){
+    log.info('Missing order', []);
+  }
+  let nixContract = NixContract.bind(event.address);
+
+  // Instantiate a trade or create a new one
+  // Store info about a trade
+  // Mark a reference to the trade in the order
+  // order.save();
+  log.info('TODO', []);
+}
+
+export function handleTip(event: ThankYou): void {
+  let globalStats = loadOrCreateGlobalStats();
+  globalStats.numberOfOrdersAdded = globalStats.tipLifetimeAccumulatedInWei.plus(event.params.tip);
+  globalStats.save();
+}
+
 

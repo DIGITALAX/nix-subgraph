@@ -10,6 +10,7 @@ type Order @entity {
   expiry: BigInt!
   tradeCount: BigInt!
   tradeMax: BigInt!
+  royaltyFactor: BigInt!
   orderIndex: BigInt!
 }
 
@@ -18,10 +19,25 @@ type Token @entity {
   name: String!
   symbol: String!
   orderIndexes: [String!]!
-  orders : [Order!]! @derivedFrom(field:"token")
+  orders: [Order!]! @derivedFrom(field:"token")
   executed: BigInt!
   volumeToken: BigInt!
   volumeErc20: BigInt!
+}
+
+type Trade @entity {
+  id: ID!
+  royaltyFactor: BigInt!
+  blockNumber: BigInt!
+  uniqueAddresses: [String!]!
+  orders: [Order!]!
+}
+
+type GlobalStats @entity {
+   id: ID!
+   tipLifetimeAccumulatedInWei: BigInt!
+   numberOfOrdersAdded: BigInt!
+   numberOfTradesExecuted: BigInt!
 }
 
 
