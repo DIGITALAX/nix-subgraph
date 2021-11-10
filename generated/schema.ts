@@ -87,22 +87,22 @@ export class Order extends Entity {
     this.set("taker", Value.fromString(value));
   }
 
-  get orderType(): BigInt {
-    let value = this.get("orderType");
-    return value.toBigInt();
-  }
-
-  set orderType(value: BigInt) {
-    this.set("orderType", Value.fromBigInt(value));
-  }
-
-  get orderTypeString(): string {
-    let value = this.get("orderTypeString");
+  get buyOrSell(): string {
+    let value = this.get("buyOrSell");
     return value.toString();
   }
 
-  set orderTypeString(value: string) {
-    this.set("orderTypeString", Value.fromString(value));
+  set buyOrSell(value: string) {
+    this.set("buyOrSell", Value.fromString(value));
+  }
+
+  get anyOrAll(): string {
+    let value = this.get("anyOrAll");
+    return value.toString();
+  }
+
+  set anyOrAll(value: string) {
+    this.set("anyOrAll", Value.fromString(value));
   }
 
   get expiry(): BigInt {
@@ -132,13 +132,13 @@ export class Order extends Entity {
     this.set("tradeMax", Value.fromBigInt(value));
   }
 
-  get orderIndex(): string {
+  get orderIndex(): BigInt {
     let value = this.get("orderIndex");
-    return value.toString();
+    return value.toBigInt();
   }
 
-  set orderIndex(value: string) {
-    this.set("orderIndex", Value.fromString(value));
+  set orderIndex(value: BigInt) {
+    this.set("orderIndex", Value.fromBigInt(value));
   }
 }
 
@@ -170,6 +170,24 @@ export class Token extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
   }
 
   get orderIndexes(): Array<string> {

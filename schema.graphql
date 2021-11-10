@@ -5,16 +5,18 @@ type Order @entity {
   tokenIds: [BigInt!]!
   maker: String!
   taker: String!
-  orderType: BigInt!
-  orderTypeString: String!
+  buyOrSell: String!
+  anyOrAll: String!
   expiry: BigInt!
   tradeCount: BigInt!
   tradeMax: BigInt!
-  orderIndex: String!
+  orderIndex: BigInt!
 }
 
 type Token @entity {
   id: ID!
+  name: String!
+  symbol: String!
   orderIndexes: [String!]!
   orders : [Order!]! @derivedFrom(field:"token")
   executed: BigInt!

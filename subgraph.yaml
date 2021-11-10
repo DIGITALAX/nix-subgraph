@@ -23,6 +23,8 @@ dataSources:
       abis:
         - name: Nix
           file: ./abis/Nix.json
+        - name: ERC721
+          file: ./abis/ERC721.json
       eventHandlers:
         - event: OrderAdded(address,uint256)
           handler: handleOrderAdded
