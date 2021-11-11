@@ -12,6 +12,7 @@ type Order @entity {
   tradeMax: BigInt!
   royaltyFactor: BigInt!
   orderIndex: BigInt!
+  trades: [Trade!]!
 }
 
 type Token @entity {
@@ -27,6 +28,7 @@ type Token @entity {
 
 type Trade @entity {
   id: ID!
+  taker: String!
   royaltyFactor: BigInt!
   blockNumber: BigInt!
   uniqueAddresses: [String!]!

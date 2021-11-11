@@ -149,6 +149,15 @@ export class Order extends Entity {
   set orderIndex(value: BigInt) {
     this.set("orderIndex", Value.fromBigInt(value));
   }
+
+  get trades(): Array<string> {
+    let value = this.get("trades");
+    return value.toStringArray();
+  }
+
+  set trades(value: Array<string>) {
+    this.set("trades", Value.fromStringArray(value));
+  }
 }
 
 export class Token extends Entity {
@@ -273,6 +282,15 @@ export class Trade extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get taker(): string {
+    let value = this.get("taker");
+    return value.toString();
+  }
+
+  set taker(value: string) {
+    this.set("taker", Value.fromString(value));
   }
 
   get royaltyFactor(): BigInt {

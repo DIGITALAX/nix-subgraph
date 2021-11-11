@@ -15,6 +15,7 @@ import {
 } from '../../generated/Nix/Nix'
 import { ERC721 as ERC721Contract } from '../../generated/Nix/ERC721'
 import {loadOrCreateGlobalStat} from "./factory/GlobalStat.factory";
+import {loadOrCreateTrade} from "./factory/Trade.factory";
 
 //const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -124,20 +125,19 @@ export function handleOrderUpdated(event: OrderUpdated): void {
   let nixContract = NixContract.bind(event.address);
 
   let callResult = nixContract.try_getOrder(event.params.token, event.params.orderIndex);
-    if (callResult.reverted) {
+  if (callResult.reverted) {
       log.info('get order reverted- update handler', []);
-    } else {
+  } else {
         order.expiry = callResult.value.expiry;
         order.price = callResult.value.price;
         order.taker = callResult.value.taker.toHexString();
         order.tokenIds = callResult.value.tokenIds;
         order.tradeMax = callResult.value.tradeMax;
         order.royaltyFactor = callResult.value.royaltyFactor;
-    }
+  }
    order.save();
 }
 
-// TODO
 export function handleOrderExecuted(event: OrderExecuted): void {
   let orderId = event.params.token.toHexString().concat("-").concat(event.params.orderIndex.toString());
 
@@ -147,11 +147,40 @@ export function handleOrderExecuted(event: OrderExecuted): void {
   }
   let nixContract = NixContract.bind(event.address);
 
-  // Instantiate a trade or create a new one
-  // Store info about a trade
-  // Mark a reference to the trade in the order
-  // order.save();
-  log.info('TODO', []);
+  let tradeId = ZERO;
+  let callResult = nixContract.try_tradesLength();
+   if (callResult.reverted) {
+      log.info('trades length unsuccessful', []);
+      return;
+    } else {
+        if(callResult.value.equals(ZERO)){
+          return;
+        }
+        tradeId = callResult.value.minus(ONE);
+  }
+
+  let trade = loadOrCreateTrade(tradeId.toString());
+  let tradeResult = nixContract.try_getTrade(tradeId);
+   if (tradeResult.reverted) {
+      log.info('get trade unsuccessful', []);
+      return;
+    } else {
+       trade.taker = tradeResult.value.value0.toHexString();
+       trade.royaltyFactor = tradeResult.value.value1;
+       trade.blockNumber = tradeResult.value.value2;
+       const orders = trade.orders;
+       orders.push(trade.id);
+       trade.orders = orders;
+       trade.save();
+
+       const trades = order.trades;
+       trades.push(trade.id);
+       order.trades = trades;
+       order.save();
+  }
+
+  // TODO figure out unique addresses
+
 }
 
 export function handleTip(event: ThankYou): void {
