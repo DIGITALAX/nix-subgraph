@@ -1,7 +1,7 @@
 import {ZERO} from "../constants";
 import { Trade } from '../../../generated/schema'
 
-export function loadOrCreateTrade(id: string): Trade | null {
+export function loadOrCreateTrade(id: string): Trade {
     let trade = Trade.load(id);
 
     if (trade == null) {

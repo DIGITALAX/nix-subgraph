@@ -1,45 +1,45 @@
 type Order @entity {
   id: ID!
-  price: BigInt!
-  token: Token!
-  tokenIds: [BigInt!]!
-  maker: String!
-  taker: String!
-  buyOrSell: String!
-  anyOrAll: String!
-  expiry: BigInt!
-  tradeCount: BigInt!
-  tradeMax: BigInt!
-  royaltyFactor: BigInt!
-  orderIndex: BigInt!
-  trades: [Trade!]!
+  price: BigInt
+  token: Token
+  tokenIds: [BigInt!]
+  maker: String
+  taker: String
+  buyOrSell: String
+  anyOrAll: String
+  expiry: BigInt
+  tradeCount: BigInt
+  tradeMax: BigInt
+  royaltyFactor: BigInt
+  orderIndex: BigInt
+  trades: [Trade!]
 }
 
 type Token @entity {
   id: ID!
-  name: String!
-  symbol: String!
-  orderIndexes: [String!]!
-  orders: [Order!]! @derivedFrom(field:"token")
-  executed: BigInt!
-  volumeToken: BigInt!
-  volumeErc20: BigInt!
+  name: String
+  symbol: String
+  lastOrderIndex: BigInt
+  orders: [Order!] @derivedFrom(field:"token")
+  executed: BigInt
+  volumeToken: BigInt
+  volumeErc20: BigInt
 }
 
 type Trade @entity {
   id: ID!
-  taker: String!
-  royaltyFactor: BigInt!
-  blockNumber: BigInt!
-  uniqueAddresses: [String!]!
-  orders: [Order!]!
+  taker: String
+  royaltyFactor: BigInt
+  blockNumber: BigInt
+  uniqueAddresses: [String!]
+  orders: [Order!]
 }
 
 type GlobalStat @entity {
    id: ID!
-   tipLifetimeAccumulatedInWei: BigInt!
-   numberOfOrdersAdded: BigInt!
-   numberOfTradesExecuted: BigInt!
+   tipLifetimeAccumulatedInWei: BigInt
+   numberOfOrdersAdded: BigInt
+   numberOfTradesExecuted: BigInt
 }
 
 

@@ -1,7 +1,7 @@
 import {ZERO} from "../constants";
 import { GlobalStat } from '../../../generated/schema'
 
-export function loadOrCreateGlobalStat(): GlobalStat | null {
+export function loadOrCreateGlobalStat(): GlobalStat {
     let globalStat = GlobalStat.load('1');
 
     if (globalStat == null) {

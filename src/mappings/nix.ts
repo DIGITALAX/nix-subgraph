@@ -26,7 +26,7 @@ export function handleOrderAdded(event: OrderAdded): void {
   if(token == null){
     token = new Token(event.params.token.toHexString());
     token.executed = ZERO;
-    token.orderIndexes = null;
+    token.lastOrderIndex = ZERO;
     token.volumeErc20 = ZERO;
     token.volumeToken = ZERO;
     token.name = null;
@@ -90,10 +90,19 @@ export function handleOrderAdded(event: OrderAdded): void {
   }
 
   order.save();
+
+  token.lastOrderIndex = event.params.orderIndex;
+
   token.save();
 
   let globalStat = loadOrCreateGlobalStat();
-  globalStat.numberOfOrdersAdded = globalStat.numberOfOrdersAdded.plus(ONE);
+  let newOrder = ZERO;
+  if(globalStat.numberOfOrdersAdded) {
+    newOrder = globalStat.numberOfOrdersAdded!;
+  }
+  if(newOrder) {
+    globalStat.numberOfOrdersAdded = newOrder.plus(ONE);
+  }
   globalStat.save();
 }
 
@@ -103,6 +112,7 @@ export function handleOrderDisabled(event: OrderDisabled): void {
   let order = Order.load(orderId);
   if(order == null){
     log.info('Missing order', []);
+    return;
   }
   let nixContract = NixContract.bind(event.address);
 
@@ -121,6 +131,7 @@ export function handleOrderUpdated(event: OrderUpdated): void {
   let order = Order.load(orderId);
   if(order == null){
     log.info('Missing order', []);
+    return;
   }
   let nixContract = NixContract.bind(event.address);
 
@@ -144,6 +155,7 @@ export function handleOrderExecuted(event: OrderExecuted): void {
   let order = Order.load(orderId);
   if(order == null){
     log.info('Missing order', []);
+    return;
   }
   let nixContract = NixContract.bind(event.address);
 
@@ -168,24 +180,32 @@ export function handleOrderExecuted(event: OrderExecuted): void {
        trade.taker = tradeResult.value.value0.toHexString();
        trade.royaltyFactor = tradeResult.value.value1;
        trade.blockNumber = tradeResult.value.value2;
+
        const orders = trade.orders;
-       orders.push(trade.id);
+       if(orders) {
+         orders.push(order.id);
+       }
        trade.orders = orders;
        trade.save();
 
        const trades = order.trades;
-       trades.push(trade.id);
+       if(trades) {
+         trades.push(trade.id);
+       }
        order.trades = trades;
        order.save();
   }
-
-  // TODO figure out unique addresses
-
 }
 
 export function handleTip(event: ThankYou): void {
   let globalStat = loadOrCreateGlobalStat();
-  globalStat.numberOfOrdersAdded = globalStat.tipLifetimeAccumulatedInWei.plus(event.params.tip);
+  let newTip = ZERO;
+  if(globalStat.tipLifetimeAccumulatedInWei) {
+    newTip = globalStat.tipLifetimeAccumulatedInWei!;
+  }
+  if(newTip) {
+    globalStat.tipLifetimeAccumulatedInWei = newTip.plus(event.params.tip);
+  }
   globalStat.save();
 }
 
