@@ -1,0 +1,38 @@
+specVersion: 0.0.3
+description: Nix is a decentralized protocol for exchanging NFTs on EVM blockchains.
+repository: https://github.com/digitalax/nix-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Nix
+    network: "rinkeby"
+    source:
+      address: '0x66fa96804A82034Dd7C44aF5376eEd7207861efd'
+      abi: Nix
+      startBlock: 9625689
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/nix.ts
+      entities:
+        - Orders
+        - TokenInfos
+        - Trades
+      abis:
+        - name: Nix
+          file: ./abis/Nix.json
+        - name: ERC721
+          file: ./abis/ERC721.json
+      eventHandlers:
+        - event: OrderAdded(address,uint256)
+          handler: handleOrderAdded
+        - event: OrderDisabled(address,uint256)
+          handler: handleOrderDisabled
+        - event: OrderExecuted(address,uint256,uint256)
+          handler: handleOrderExecuted
+        - event: OrderUpdated(address,uint256)
+          handler: handleOrderUpdated
+        - event: ThankYou(uint256)
+          handler: handleTip

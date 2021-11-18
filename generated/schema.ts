@@ -265,6 +265,237 @@ export class Order extends Entity {
   }
 }
 
+export class NFT extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("tokenId", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save NFT entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save NFT entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("NFT", id.toString(), this);
+    }
+  }
+
+  static load(id: string): NFT | null {
+    return changetype<NFT | null>(store.get("NFT", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    return value!.toBigInt();
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get token(): string | null {
+    let value = this.get("token");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set token(value: string | null) {
+    if (!value) {
+      this.unset("token");
+    } else {
+      this.set("token", Value.fromString(<string>value));
+    }
+  }
+
+  get lastSalePrice(): BigInt | null {
+    let value = this.get("lastSalePrice");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastSalePrice(value: BigInt | null) {
+    if (!value) {
+      this.unset("lastSalePrice");
+    } else {
+      this.set("lastSalePrice", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get lastSeller(): string | null {
+    let value = this.get("lastSeller");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lastSeller(value: string | null) {
+    if (!value) {
+      this.unset("lastSeller");
+    } else {
+      this.set("lastSeller", Value.fromString(<string>value));
+    }
+  }
+
+  get lastBuyer(): string | null {
+    let value = this.get("lastBuyer");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lastBuyer(value: string | null) {
+    if (!value) {
+      this.unset("lastBuyer");
+    } else {
+      this.set("lastBuyer", Value.fromString(<string>value));
+    }
+  }
+
+  get tradeCount(): BigInt | null {
+    let value = this.get("tradeCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set tradeCount(value: BigInt | null) {
+    if (!value) {
+      this.unset("tradeCount");
+    } else {
+      this.set("tradeCount", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get totalVolume(): BigInt | null {
+    let value = this.get("totalVolume");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalVolume(value: BigInt | null) {
+    if (!value) {
+      this.unset("totalVolume");
+    } else {
+      this.set("totalVolume", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get lastRoyaltyFactor(): BigInt | null {
+    let value = this.get("lastRoyaltyFactor");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastRoyaltyFactor(value: BigInt | null) {
+    if (!value) {
+      this.unset("lastRoyaltyFactor");
+    } else {
+      this.set("lastRoyaltyFactor", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get lastTradeIndex(): BigInt | null {
+    let value = this.get("lastTradeIndex");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastTradeIndex(value: BigInt | null) {
+    if (!value) {
+      this.unset("lastTradeIndex");
+    } else {
+      this.set("lastTradeIndex", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get lastOrderIndex(): BigInt | null {
+    let value = this.get("lastOrderIndex");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastOrderIndex(value: BigInt | null) {
+    if (!value) {
+      this.unset("lastOrderIndex");
+    } else {
+      this.set("lastOrderIndex", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get orders(): Array<string> | null {
+    let value = this.get("orders");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set orders(value: Array<string> | null) {
+    if (!value) {
+      this.unset("orders");
+    } else {
+      this.set("orders", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get trades(): Array<string> | null {
+    let value = this.get("trades");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set trades(value: Array<string> | null) {
+    if (!value) {
+      this.unset("trades");
+    } else {
+      this.set("trades", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+}
+
 export class Token extends Entity {
   constructor(id: string) {
     super();
@@ -413,6 +644,23 @@ export class Token extends Entity {
       this.unset("volumeErc20");
     } else {
       this.set("volumeErc20", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get nfts(): Array<string> | null {
+    let value = this.get("nfts");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set nfts(value: Array<string> | null) {
+    if (!value) {
+      this.unset("nfts");
+    } else {
+      this.set("nfts", Value.fromStringArray(<Array<string>>value));
     }
   }
 }
