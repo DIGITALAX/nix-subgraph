@@ -27,6 +27,7 @@ type NFT @entity {
   lastRoyaltyFactor: BigInt
   lastTradeIndex: BigInt
   lastOrderIndex: BigInt
+  uri: String
   orders: [Order!]
   trades: [Trade!]
 }
@@ -37,6 +38,7 @@ type Token @entity {
   symbol: String
   lastOrderIndex: BigInt
   orders: [Order!] @derivedFrom(field:"token")
+  trades: [Trade!]
   executed: BigInt
   volumeToken: BigInt
   volumeErc20: BigInt
@@ -50,6 +52,7 @@ type Trade @entity {
   blockNumber: BigInt
   uniqueAddresses: [String!]
   orders: [Order!]
+  tokens: [Token!]
 }
 
 type GlobalStat @entity {

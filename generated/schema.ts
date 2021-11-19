@@ -461,6 +461,23 @@ export class NFT extends Entity {
     }
   }
 
+  get uri(): string | null {
+    let value = this.get("uri");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set uri(value: string | null) {
+    if (!value) {
+      this.unset("uri");
+    } else {
+      this.set("uri", Value.fromString(<string>value));
+    }
+  }
+
   get orders(): Array<string> | null {
     let value = this.get("orders");
     if (!value || value.kind == ValueKind.NULL) {
@@ -593,6 +610,23 @@ export class Token extends Entity {
       this.unset("orders");
     } else {
       this.set("orders", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get trades(): Array<string> | null {
+    let value = this.get("trades");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set trades(value: Array<string> | null) {
+    if (!value) {
+      this.unset("trades");
+    } else {
+      this.set("trades", Value.fromStringArray(<Array<string>>value));
     }
   }
 
@@ -779,6 +813,23 @@ export class Trade extends Entity {
       this.unset("orders");
     } else {
       this.set("orders", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get tokens(): Array<string> | null {
+    let value = this.get("tokens");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set tokens(value: Array<string> | null) {
+    if (!value) {
+      this.unset("tokens");
+    } else {
+      this.set("tokens", Value.fromStringArray(<Array<string>>value));
     }
   }
 }

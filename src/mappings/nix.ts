@@ -101,6 +101,7 @@ export function handleOrderAdded(event: OrderAdded): void {
                       nft.tokenId = order.tokenIds![i];
                       nft.totalVolume = ZERO;
                       nft.tradeCount = ZERO;
+                      nft.uri = uriResult.value;
                       const orders = nft.orders;
                       nft.orders = nft.orders ? orders!.concat([order.id]) : [order.id];
 
@@ -295,12 +296,22 @@ export function handleOrderExecuted(event: OrderExecuted): void {
        if(trades) {
          trades.push(trade.id);
        }
+
+
        order.trades = trades;
        order.save();
   }
 
    let token = Token.load(tokenAddress);
    if(token){
+      const trades = token.trades;
+      token.trades = trades && trades.indexOf(trade.id) == -1 ? trades.concat([trade.id]) : [trade.id];
+      token.save();
+
+      const tokens = trade.tokens;
+      trade.tokens = tokens && tokens.indexOf(token.id) == -1 ? tokens.concat([token.id]) : [token.id];
+      trade.save();
+
       // Sync up token
       let tokenResult = nixContract.try_tokens(event.params.token);
 
