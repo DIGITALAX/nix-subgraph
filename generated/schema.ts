@@ -247,6 +247,57 @@ export class Order extends Entity {
     }
   }
 
+  get timestamp(): BigInt | null {
+    let value = this.get("timestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt | null) {
+    if (!value) {
+      this.unset("timestamp");
+    } else {
+      this.set("timestamp", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get createdTxHash(): string | null {
+    let value = this.get("createdTxHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set createdTxHash(value: string | null) {
+    if (!value) {
+      this.unset("createdTxHash");
+    } else {
+      this.set("createdTxHash", Value.fromString(<string>value));
+    }
+  }
+
+  get lastModifiedTxHash(): string | null {
+    let value = this.get("lastModifiedTxHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lastModifiedTxHash(value: string | null) {
+    if (!value) {
+      this.unset("lastModifiedTxHash");
+    } else {
+      this.set("lastModifiedTxHash", Value.fromString(<string>value));
+    }
+  }
+
   get trades(): Array<string> | null {
     let value = this.get("trades");
     if (!value || value.kind == ValueKind.NULL) {
@@ -261,6 +312,75 @@ export class Order extends Entity {
       this.unset("trades");
     } else {
       this.set("trades", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+}
+
+export class GarmentAttribute extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GarmentAttribute entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save GarmentAttribute entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("GarmentAttribute", id.toString(), this);
+    }
+  }
+
+  static load(id: string): GarmentAttribute | null {
+    return changetype<GarmentAttribute | null>(
+      store.get("GarmentAttribute", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get type(): string | null {
+    let value = this.get("type");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set type(value: string | null) {
+    if (!value) {
+      this.unset("type");
+    } else {
+      this.set("type", Value.fromString(<string>value));
+    }
+  }
+
+  get value(): string | null {
+    let value = this.get("value");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set value(value: string | null) {
+    if (!value) {
+      this.unset("value");
+    } else {
+      this.set("value", Value.fromString(<string>value));
     }
   }
 }
@@ -475,6 +595,108 @@ export class NFT extends Entity {
       this.unset("uri");
     } else {
       this.set("uri", Value.fromString(<string>value));
+    }
+  }
+
+  get image(): string | null {
+    let value = this.get("image");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set image(value: string | null) {
+    if (!value) {
+      this.unset("image");
+    } else {
+      this.set("image", Value.fromString(<string>value));
+    }
+  }
+
+  get name(): string | null {
+    let value = this.get("name");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (!value) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(<string>value));
+    }
+  }
+
+  get description(): string | null {
+    let value = this.get("description");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set description(value: string | null) {
+    if (!value) {
+      this.unset("description");
+    } else {
+      this.set("description", Value.fromString(<string>value));
+    }
+  }
+
+  get animation(): string | null {
+    let value = this.get("animation");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set animation(value: string | null) {
+    if (!value) {
+      this.unset("animation");
+    } else {
+      this.set("animation", Value.fromString(<string>value));
+    }
+  }
+
+  get external(): string | null {
+    let value = this.get("external");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set external(value: string | null) {
+    if (!value) {
+      this.unset("external");
+    } else {
+      this.set("external", Value.fromString(<string>value));
+    }
+  }
+
+  get attributes(): Array<string> | null {
+    let value = this.get("attributes");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set attributes(value: Array<string> | null) {
+    if (!value) {
+      this.unset("attributes");
+    } else {
+      this.set("attributes", Value.fromStringArray(<Array<string>>value));
     }
   }
 
@@ -796,6 +1018,40 @@ export class Trade extends Entity {
       this.unset("uniqueAddresses");
     } else {
       this.set("uniqueAddresses", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get timestamp(): BigInt | null {
+    let value = this.get("timestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt | null) {
+    if (!value) {
+      this.unset("timestamp");
+    } else {
+      this.set("timestamp", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get executedTxHash(): string | null {
+    let value = this.get("executedTxHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set executedTxHash(value: string | null) {
+    if (!value) {
+      this.unset("executedTxHash");
+    } else {
+      this.set("executedTxHash", Value.fromString(<string>value));
     }
   }
 

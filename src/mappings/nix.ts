@@ -1,10 +1,11 @@
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal, store, Address, log } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, store, Address, log, ipfs, json, Bytes, JSONValueKind } from '@graphprotocol/graph-ts'
 import { ZERO, ONE, ZERO_ADDRESS } from './constants'
 import {
   NFT,
   Order,
-  Token
+  Token,
+  GarmentAttribute
 } from '../../generated/schema'
 import {
   OrderAdded,
@@ -68,6 +69,9 @@ export function handleOrderAdded(event: OrderAdded): void {
         order.tradeCount = ZERO;
         order.tradeMax = ZERO;
         order.royaltyFactor = ZERO;
+        order.createdTxHash = null;
+        order.lastModifiedTxHash = null;
+        order.timestamp = ZERO;
     } else {
         order.expiry = callResult.value.expiry;
         order.maker = callResult.value.maker.toHexString();
@@ -80,6 +84,9 @@ export function handleOrderAdded(event: OrderAdded): void {
         order.tradeCount = callResult.value.tradeCount;
         order.tradeMax = callResult.value.tradeMax;
         order.royaltyFactor = callResult.value.royaltyFactor;
+        order.createdTxHash = event.transaction.hash.toHexString();
+        order.lastModifiedTxHash = event.transaction.hash.toHexString();
+        order.timestamp = event.block.timestamp;
 
         for (let i = 0; i < order.tokenIds!.length; i += 1) {
                 if(order.tokenIds![i]) {
@@ -101,9 +108,83 @@ export function handleOrderAdded(event: OrderAdded): void {
                       nft.tokenId = order.tokenIds![i];
                       nft.totalVolume = ZERO;
                       nft.tradeCount = ZERO;
+                      nft.image = null;
+                      nft.animation = null;
+                      nft.external = null;
+                      nft.name = null;
+                      nft.description = null;
                       nft.uri = uriResult.value;
                       const orders = nft.orders;
                       nft.orders = nft.orders ? orders!.concat([order.id]) : [order.id];
+
+                      if (nft.uri) {
+                        if (nft.uri!.indexOf("ipfs/") != -1) {
+                          let tokenHash = nft.uri!.split("ipfs/")[1];
+                          let tokenBytes = ipfs.cat(tokenHash);
+                          if (tokenBytes) {
+                            let data = json.try_fromBytes(tokenBytes as Bytes);
+                            if (data.isOk) {
+                              if (data.value.kind === JSONValueKind.OBJECT) {
+                                let res = data.value.toObject();
+                                if (res.get("image")) {
+                                  if (res.get("image")!.kind === JSONValueKind.STRING) {
+                                    nft.image = res.get("image")!.toString();
+                                  }
+                                }
+                                if (res.get("animation_url")) {
+                                  if (res.get("animation_url")!.kind === JSONValueKind.STRING) {
+                                    nft.animation = res.get("animation_url")!.toString();
+                                  }
+                                }
+                                if (res.get("name")) {
+                                  if (res.get("name")!.kind === JSONValueKind.STRING) {
+                                    nft.name = res.get("name")!.toString();
+                                  }
+                                }
+                                if (res.get("description")) {
+                                  if (res.get("description")!.kind === JSONValueKind.STRING) {
+                                    nft.description = res.get("description")!.toString();
+                                  }
+                                }
+                                if (res.get("external_url")) {
+                                  if (res.get("external_url")!.kind === JSONValueKind.STRING) {
+                                    nft.external = res.get("external_url")!.toString();
+                                  }
+                                }
+                                if (res.get("attributes")!.kind === JSONValueKind.ARRAY) {
+                                  let attributes = res.get("attributes")!.toArray();
+                                  for (let i = 0; i < attributes.length; i += 1) {
+                                    if (attributes[i].kind === JSONValueKind.OBJECT) {
+                                      let attribute = attributes[i].toObject();
+                                      let garmentAttribute = new GarmentAttribute(
+                                        nft.token + nft.id + i.toString()
+                                      );
+                                      garmentAttribute.type = null;
+                                      garmentAttribute.value = null;
+
+                                      if (
+                                        attribute.get("trait_type")!.kind === JSONValueKind.STRING
+                                      ) {
+                                        garmentAttribute.type = attribute
+                                          .get("trait_type")!
+                                          .toString();
+                                      }
+                                      if (attribute.get("value")!.kind === JSONValueKind.STRING) {
+                                        garmentAttribute.value = attribute
+                                          .get("value")!
+                                          .toString();
+                                      }
+                                      garmentAttribute.save();
+                                      let attrs = nft.attributes;
+                                      nft.attributes = attrs ? attrs.concat([garmentAttribute.id]) : [garmentAttribute.id];
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
 
                       nft.save();
                     }
@@ -144,6 +225,7 @@ export function handleOrderDisabled(event: OrderDisabled): void {
       log.info('get order reverted- disable handler', []);
     } else {
         order.expiry = callResult.value.expiry;
+        order.lastModifiedTxHash = event.transaction.hash.toHexString();
     }
    order.save();
 }
@@ -195,6 +277,7 @@ export function handleOrderUpdated(event: OrderUpdated): void {
     order.expiry = callResult.value.expiry;
     order.price = callResult.value.price;
     order.taker = callResult.value.taker.toHexString();
+    order.lastModifiedTxHash = event.transaction.hash.toHexString();
 
     for (let i = 0; i < order.tokenIds!.length; i += 1) {
       const nftId = tokenAddress.concat("-").concat(order.tokenIds![i].toString());
@@ -284,6 +367,8 @@ export function handleOrderExecuted(event: OrderExecuted): void {
        trade.taker = tradeResult.value.value0.toHexString();
        trade.royaltyFactor = tradeResult.value.value1;
        trade.blockNumber = tradeResult.value.value2;
+       trade.executedTxHash = event.transaction.hash.toHexString();
+       trade.timestamp = event.block.timestamp;
 
        const orders = trade.orders;
        if(orders) {

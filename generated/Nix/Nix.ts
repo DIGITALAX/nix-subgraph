@@ -74,6 +74,14 @@ export class OrderExecuted__Params {
   get orderIndex(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
+
+  get tradeIndex(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
+  }
 }
 
 export class OrderUpdated extends ethereum.Event {
@@ -432,21 +440,6 @@ export class Nix extends ethereum.SmartContract {
     );
   }
 
-  newOwner(): Address {
-    let result = super.call("newOwner", "newOwner():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_newOwner(): ethereum.CallResult<Address> {
-    let result = super.tryCall("newOwner", "newOwner():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
   onERC721Received(
     param0: Address,
     param1: Address,
@@ -623,32 +616,6 @@ export class Nix extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-}
-
-export class AcceptOwnershipCall extends ethereum.Call {
-  get inputs(): AcceptOwnershipCall__Inputs {
-    return new AcceptOwnershipCall__Inputs(this);
-  }
-
-  get outputs(): AcceptOwnershipCall__Outputs {
-    return new AcceptOwnershipCall__Outputs(this);
-  }
-}
-
-export class AcceptOwnershipCall__Inputs {
-  _call: AcceptOwnershipCall;
-
-  constructor(call: AcceptOwnershipCall) {
-    this._call = call;
-  }
-}
-
-export class AcceptOwnershipCall__Outputs {
-  _call: AcceptOwnershipCall;
-
-  constructor(call: AcceptOwnershipCall) {
-    this._call = call;
   }
 }
 

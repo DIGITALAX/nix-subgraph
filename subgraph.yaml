@@ -8,9 +8,9 @@ dataSources:
     name: Nix
     network: "mumbai"
     source:
-      address: '0xd365287fdce62981b6dd158279b1161995d3862a'
+      address: '0x64dB5C5Dc35dD1d06cc14d049028050ce4783DDC'
       abi: Nix
-      startBlock: 21060696
+      startBlock: 21666951
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -30,7 +30,7 @@ dataSources:
           handler: handleOrderAdded
         - event: OrderDisabled(address,uint256)
           handler: handleOrderDisabled
-        - event: OrderExecuted(address,uint256)
+        - event: OrderExecuted(address,uint256,uint256,uint256[])
           handler: handleOrderExecuted
         - event: OrderUpdated(address,uint256)
           handler: handleOrderUpdated

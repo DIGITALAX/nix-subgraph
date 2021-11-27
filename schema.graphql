@@ -12,7 +12,16 @@ type Order @entity {
   tradeMax: BigInt
   royaltyFactor: BigInt
   orderIndex: BigInt
+  timestamp: BigInt
+  createdTxHash: String
+  lastModifiedTxHash: String
   trades: [Trade!]
+}
+
+type GarmentAttribute @entity {
+  id: ID!
+  type: String
+  value: String
 }
 
 type NFT @entity {
@@ -28,6 +37,12 @@ type NFT @entity {
   lastTradeIndex: BigInt
   lastOrderIndex: BigInt
   uri: String
+  image: String
+  name: String
+  description: String
+  animation: String
+  external: String
+  attributes: [GarmentAttribute!]
   orders: [Order!]
   trades: [Trade!]
 }
@@ -51,6 +66,8 @@ type Trade @entity {
   royaltyFactor: BigInt
   blockNumber: BigInt
   uniqueAddresses: [String!]
+  timestamp: BigInt
+  executedTxHash: String
   orders: [Order!]
   tokens: [Token!]
 }
