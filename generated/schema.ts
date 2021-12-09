@@ -94,6 +94,23 @@ export class Order extends Entity {
     }
   }
 
+  get executedTokenIds(): Array<BigInt> | null {
+    let value = this.get("executedTokenIds");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set executedTokenIds(value: Array<BigInt> | null) {
+    if (!value) {
+      this.unset("executedTokenIds");
+    } else {
+      this.set("executedTokenIds", Value.fromBigIntArray(<Array<BigInt>>value));
+    }
+  }
+
   get maker(): string | null {
     let value = this.get("maker");
     if (!value || value.kind == ValueKind.NULL) {

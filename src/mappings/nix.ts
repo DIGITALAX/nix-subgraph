@@ -66,6 +66,7 @@ export function handleOrderAdded(event: OrderAdded): void {
         order.price = ZERO;
         order.taker = null;
         order.tokenIds = null;
+        order.executedTokenIds = null;
         order.tradeCount = ZERO;
         order.tradeMax = ZERO;
         order.royaltyFactor = ZERO;
@@ -335,6 +336,7 @@ export function handleOrderUpdated(event: OrderUpdated): void {
    order.save();
 }
 
+// Works for one order executed at a time for now
 export function handleOrderExecuted(event: OrderExecuted): void {
   const tokenAddress = event.params.token.toHexString();
   let orderId = tokenAddress.concat("-").concat(event.params.orderIndex.toString());
@@ -382,8 +384,10 @@ export function handleOrderExecuted(event: OrderExecuted): void {
          trades.push(trade.id);
        }
 
-
-       order.trades = trades;
+       if(order.tokenIds){
+          order.executedTokenIds = order.executedTokenIds ? order.executedTokenIds!.concat(order.tokenIds!) : order.tokenIds!;
+       }
+      order.trades = trades;
        order.save();
   }
 
@@ -428,6 +432,7 @@ export function handleOrderExecuted(event: OrderExecuted): void {
             nft.lastTradeIndex = tradeId;
             const trades = nft.trades;
             nft.trades = trades ? trades.concat([trade.id]) : [trade.id];
+            nftOrder.expiry = ONE;
 
             let erc721Contract = ERC721Contract.bind(event.params.token);
              let ownerResult = erc721Contract.try_ownerOf(nft.tokenId);

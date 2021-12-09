@@ -837,6 +837,36 @@ export class OnERC721ReceivedCall__Outputs {
   }
 }
 
+export class SetMarketplaceFeeCall extends ethereum.Call {
+  get inputs(): SetMarketplaceFeeCall__Inputs {
+    return new SetMarketplaceFeeCall__Inputs(this);
+  }
+
+  get outputs(): SetMarketplaceFeeCall__Outputs {
+    return new SetMarketplaceFeeCall__Outputs(this);
+  }
+}
+
+export class SetMarketplaceFeeCall__Inputs {
+  _call: SetMarketplaceFeeCall;
+
+  constructor(call: SetMarketplaceFeeCall) {
+    this._call = call;
+  }
+
+  get fee(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetMarketplaceFeeCall__Outputs {
+  _call: SetMarketplaceFeeCall;
+
+  constructor(call: SetMarketplaceFeeCall) {
+    this._call = call;
+  }
+}
+
 export class TransferOwnershipCall extends ethereum.Call {
   get inputs(): TransferOwnershipCall__Inputs {
     return new TransferOwnershipCall__Inputs(this);

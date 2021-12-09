@@ -3,6 +3,7 @@ type Order @entity {
   price: BigInt
   token: Token
   tokenIds: [BigInt!]
+  executedTokenIds: [BigInt!]
   maker: String
   taker: String
   buyOrSell: String
